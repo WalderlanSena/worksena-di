@@ -1,0 +1,26 @@
+{
+    "name": "mvs/worksena-di",
+    "description": "Gerenciador de Dependência WorkSena",
+    "license": "MIT",
+    "type": "project",
+    "version": "v1.0.0",
+    "authors": [
+        {
+          "name": "Walderlan Sena",
+          "email": "walderlan@worksena.xyz",
+          "homepage": "https://www.worksena.xyz",
+          "role": "Developer"
+        }
+    ],
+    "required": {
+        "php": ">=7.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "WS\\DI\\": "src/"
+        }
+    },
+    "require": {
+        "php": "^7.0"
+    }
+}
