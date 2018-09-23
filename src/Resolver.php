@@ -27,8 +27,12 @@ class Resolver
             $class = new \ReflectionClass($class);
         }
 
-        if (!$class->isInstantiable()) {
+        if (!$class->isInstantiable() && !is_object($this->getDependenceInterface($class))) {
             throw new \Exception("{$class->name} Não é instanciavél.");
+        }
+
+        if (is_object($this->getDependenceInterface($class))) {
+            $class = $this->getDependenceInterface($class);
         }
 
         $constructor = $class->getConstructor();
@@ -44,6 +48,11 @@ class Resolver
         return $class->newInstanceArgs($dependencies);
     }
 
+    /**
+     * @param $parameters
+     * @return array
+     * @throws \ReflectionException
+     */
     protected function getDependencies($parameters)
     {
         $dependencies = [];
@@ -63,6 +72,11 @@ class Resolver
         return $dependencies;
     }
 
+    /**
+     * @param \ReflectionParameter $parameter
+     * @return mixed
+     * @throws \Exception
+     */
     protected function resolveNonClass(\ReflectionParameter $parameter)
     {
         if (isset($this->dependencies_inject[$parameter->name])) {
@@ -74,5 +88,27 @@ class Resolver
         }
 
         throw new \Exception('Can not resolve class dependency');
+    }
+
+    /**
+     * @param $class
+     * @return bool|\ReflectionClass
+     * @throws \ReflectionException
+     */
+    private function getDependenceInterface($class)
+    {
+        $configDependencyInjection = include __DIR__ .'/../../../../config/autoload/module.config.php';
+
+        if (!isset($configDependencyInjection['di'])) {
+            throw new \Exception('The dependency definition was not found !');
+        }
+
+        foreach ($configDependencyInjection['di'] as $key => $value) {
+            if ($value == $class->name) {
+                $class = new \ReflectionClass($key);
+                return $class;
+            }
+        }
+        return true;
     }
 }
